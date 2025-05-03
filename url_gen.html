@@ -23,7 +23,7 @@
 </head>
 <body>
   <h1>Tạo liên kết chúc mừng sinh nhật 🎉</h1>
-  <input type="date" id="dbInput">
+  <input type="date" id="bdInput">
   <br>
   <input type="text" id="nameInput" placeholder="Nhập tên người được chúc">
   <br>
@@ -33,20 +33,20 @@
 
   <script>
     function generateURL() {
-      const db = document.getElementById('dbInput').value;
+      const bd = document.getElementById('bdInput').value;
       const name = document.getElementById('nameInput').value.trim();
 
-      if (!db || !name) {
+      if (!bd || !name) {
         alert('Vui lòng nhập đầy đủ ngày sinh và tên.');
         return;
       }
 
-      const [year, month, day] = db.split('-');
-      const dbFormatted = `${day}_${month}`;
+      const [year, month, day] = bd.split('-');
+      const bdFormatted = `${day}_${month}`;
       const nameFormatted = name.replace(/\s+/g, '_');
 
       const baseURL = 'http://akl0505.github.io/birthday/';
-      const fullURL = `${baseURL}?db=${dbFormatted}&n=${nameFormatted}`;
+      const fullURL = `${baseURL}?bd=${bdFormatted}&n=${nameFormatted}`;
 
       document.getElementById('result').innerHTML = `
         <p>Liên kết đã tạo:</p>
