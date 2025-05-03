@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chúc Mừng Sinh Nhật!</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: black;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+        }
+
+        #message {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            font-weight: bold;
+            z-index: 2;
+            text-shadow: 2px 2px 8px #ff0;
+            white-space: pre-line;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="message"></div>
+    <canvas id="fireworksCanvas"></canvas>
+
+    <script>
+        function fireworksAnimation() {
+            const canvas = document.getElementById('fireworksCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            function random(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            function Firework() {
+                this.x = canvas.width / 2;
+                this.y = canvas.height;
+                this.xEnd = random(0, canvas.width);
+                this.yEnd = random(0, canvas.height / 2);
+                this.radius = 1;
+                this.speed = random(1, 5);
+                this.acceleration = 1.05;
+                this.distanceToEnd = Math.sqrt((this.xEnd - this.x) ** 2 + (this.yEnd - this.y) ** 2);
+                this.angle = Math.atan2(this.yEnd - this.y, this.xEnd - this.x);
+                this.dx = Math.cos(this.angle) * this.speed;
+                this.dy = Math.sin(this.angle) * this.speed;
+                this.life = true;
+                this.color = `rgb(${Math.floor(random(0, 256))},${Math.floor(random(0, 256))},${Math.floor(random(0, 256))})`;
+            }
+
+            Firework.prototype.update = function () {
+                this.dx *= this.acceleration;
+                this.dy *= this.acceleration;
+                this.distanceToEnd = Math.sqrt((this.xEnd - this.x) ** 2 + (this.yEnd - this.y) ** 2);
+                if (this.distanceToEnd <= 50) {
+                    this.life = false;
+                    createParticles(this.xEnd, this.yEnd, this.color);
+                }
+                this.x += this.dx;
+                this.y += this.dy;
+            };
+
+            Firework.prototype.draw = function () {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            };
+
+            function Particle(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.dx = random(-1, 1);
+                this.dy = random(-1, 1);
+                this.radius = random(1, 4);
+                this.life = 100;
+                this.color = color;
+            }
+
+            Particle.prototype.update = function () {
+                this.x += this.dx;
+                this.y += this.dy;
+                this.life -= 1;
+            };
+
+            Particle.prototype.draw = function () {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            };
+
+            const fireworks = [];
+            const particles = [];
+
+            function createParticles(x, y, color) {
+                for (let i = 0; i < 50; i++) {
+                    particles.push(new Particle(x, y, color));
+                }
+            }
+
+            function handleParticles() {
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                    if (particles[i].life <= 0) {
+                        particles.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+
+            function handleFireworks() {
+                for (let i = 0; i < fireworks.length; i++) {
+                    fireworks[i].update();
+                    fireworks[i].draw();
+                    if (!fireworks[i].life) {
+                        fireworks.splice(i, 1);
+                        i--;
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                handleFireworks();
+                handleParticles();
+                if (Math.random() < 0.03) {
+                    fireworks.push(new Firework());
+                }
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        function getBirthdayInfoFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const datePart = params.get('dob');
+            const namePart = params.get('name');
+
+            if (!datePart || !namePart) return null;
+
+            const [dayStr, monthStr] = datePart.split('_');
+            const day = parseInt(dayStr, 10);
+            const month = parseInt(monthStr, 10) - 1;
+
+            return {
+                day,
+                month,
+                name: namePart.replace(/_/g, ' ')
+            };
+        }
+
+
+        const birthdayInfo = getBirthdayInfoFromURL();
+        const today = new Date();
+        const messageEl = document.getElementById('message');
+
+        if (birthdayInfo) {
+            const { day, month, name } = birthdayInfo;
+
+            if (today.getDate() === day && today.getMonth() === month) {
+                messageEl.innerText = `🎉 Chúc mừng sinh nhật ${name}! 🎂\nChúc bạn luôn vui vẻ và hạnh phúc!`;
+                fireworksAnimation();
+            } else {
+                messageEl.innerText = ``;
+            }
+        } else {
+            messageEl.innerText = "";
+        }
+    </script>
+
+</body>
+
+</html>
