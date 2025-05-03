@@ -158,8 +158,8 @@
 
         function getBirthdayInfoFromURL() {
             const params = new URLSearchParams(window.location.search);
-            const datePart = params.get('dob');
-            const namePart = params.get('name');
+            const datePart = params.get('bd');
+            const namePart = params.get('n');
 
             if (!datePart || !namePart) return null;
 
