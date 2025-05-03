@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Tạo link chúc mừng sinh nhật</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 80px;
+    }
+    input {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tạo liên kết chúc mừng sinh nhật 🎉</h1>
+  <input type="date" id="dbInput">
+  <br>
+  <input type="text" id="nameInput" placeholder="Nhập tên người được chúc">
+  <br>
+  <button onclick="generateURL()">Tạo liên kết</button>
+
+  <p id="result"></p>
+
+  <script>
+    function generateURL() {
+      const db = document.getElementById('dbInput').value;
+      const name = document.getElementById('nameInput').value.trim();
+
+      if (!db || !name) {
+        alert('Vui lòng nhập đầy đủ ngày sinh và tên.');
+        return;
+      }
+
+      const [year, month, day] = db.split('-');
+      const dbFormatted = `${day}_${month}`;
+      const nameFormatted = name.replace(/\s+/g, '_');
+
+      const baseURL = 'http://127.0.0.1:5500/index.html';
+      const fullURL = `${baseURL}?db=${dbFormatted}&n=${nameFormatted}`;
+
+      document.getElementById('result').innerHTML = `
+        <p>Liên kết đã tạo:</p>
+        <a href="${fullURL}" target="_blank">${fullURL}</a>
+      `;
+    }
+  </script>
+</body>
+</html>
